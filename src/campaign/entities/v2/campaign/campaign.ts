@@ -5,6 +5,10 @@ import { DownloadUrls } from './banner/downloadUrls';
 import { CampaignPopup, CampaignPopupType } from './popup/popup';
 import { CampaignBanner, CampaignBannerType } from './banner/bannerV3';
 import { BannerV2, BannerV2Type } from './banner/banner';
+import {
+  CampaignLandingPage,
+  CampaignLandingPageType,
+} from './landingPage/landingPageV3';
 
 export enum CampaignV2Fields {
   COLUMN_DOWNLOAD_URLS = 'downloadUrls',
@@ -23,6 +27,7 @@ export enum CampaignV2Fields {
   COLUMN_BANNER_NEW = 'campaignBanner',
   COLUMN_POPUP = 'campaignPopup',
   COLUMN_LANDING_PAGE = 'landingPage',
+  COLUMN_LANDING_PAGE_COMPONENTS = 'landingPageComponents',
 }
 
 export enum BootstrapVariants {
@@ -46,6 +51,7 @@ export type CampaignBackground = {
 export type CampaignButton = {
   buttonClass: BootstrapVariants;
   buttonIcon?: string;
+  buttonIconPosition?: CampaignElementPosition;
   linkUrl: string;
   text: string;
 };
@@ -54,6 +60,7 @@ export type CampaignMedia = {
   height?: number;
   imageUuid?: string;
   linkUrl?: string;
+  position?: CampaignElementPosition;
   type: CampaignMediaType;
   width?: number;
 };
@@ -73,6 +80,11 @@ export enum CampaignTextColor {
   DARK = 'DARK',
 }
 
+export enum CampaignElementPosition {
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+}
+
 export type CampaignV2Type = {
   [CampaignV2Fields.COLUMN_DOWNLOAD_URLS]?: DownloadUrls;
   [CampaignV2Fields.COLUMN_REFERENCE]: string;
@@ -90,6 +102,7 @@ export type CampaignV2Type = {
   [CampaignV2Fields.COLUMN_BANNER_NEW]?: CampaignBannerType;
   [CampaignV2Fields.COLUMN_POPUP]?: CampaignPopupType;
   [CampaignV2Fields.COLUMN_LANDING_PAGE]?: LandingPageV2Type;
+  [CampaignV2Fields.COLUMN_LANDING_PAGE_COMPONENTS]?: CampaignLandingPageType[];
 };
 
 export class CampaignV2 extends AbstractEntity<CampaignV2Type> {
@@ -109,6 +122,7 @@ export class CampaignV2 extends AbstractEntity<CampaignV2Type> {
   readonly #campaignBanner?: CampaignBanner;
   readonly #campaignPopup?: CampaignPopup;
   readonly #landingPage?: LandingPageV2;
+  readonly #landingPageComponents?: CampaignLandingPage[];
 
   constructor(campaignInput: CampaignV2Type) {
     super(campaignInput);
@@ -151,6 +165,10 @@ export class CampaignV2 extends AbstractEntity<CampaignV2Type> {
           ] as LandingPageV2Type,
         )
       : undefined;
+
+    this.#landingPageComponents = campaignInput[
+      CampaignV2Fields.COLUMN_LANDING_PAGE_COMPONENTS
+    ]?.map((landingPage) => new CampaignLandingPage(landingPage));
     this.#status = campaignInput[CampaignV2Fields.COLUMN_STATUS];
   }
 
@@ -214,6 +232,10 @@ export class CampaignV2 extends AbstractEntity<CampaignV2Type> {
     return this.#landingPage;
   }
 
+  get landingPageComponents(): CampaignLandingPage[] | undefined {
+    return this.#landingPageComponents;
+  }
+
   get status(): string | undefined {
     return this.#status;
   }
@@ -234,6 +256,9 @@ export class CampaignV2 extends AbstractEntity<CampaignV2Type> {
       [CampaignV2Fields.COLUMN_BANNER]: this.banner?.toJSON(),
       [CampaignV2Fields.COLUMN_BANNER_NEW]: this.campaignBanner?.toJSON(),
       [CampaignV2Fields.COLUMN_LANDING_PAGE]: this.landingPage?.toJSON(),
+      [CampaignV2Fields.COLUMN_LANDING_PAGE_COMPONENTS]: this.landingPageComponents?.map(
+        (landingPage) => landingPage.toJSON(),
+      ),
       [CampaignV2Fields.COLUMN_POPUP]: this.campaignPopup?.toJSON(),
       [CampaignV2Fields.COLUMN_STATUS]: this.status,
     };

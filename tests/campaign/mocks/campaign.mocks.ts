@@ -16,7 +16,15 @@ import {
   LandingPageV2Fields,
   LandingPageFooterFeatureV2Fields,
   BannerV2Fields,
+  BootstrapVariants,
+  CampaignBackgroundType,
+  CampaignElementPosition,
+  CampaignMediaType,
 } from '../../../src';
+import {
+  LandingPageComponentAlignement,
+  LandingPageWidgetCategory,
+} from '../../../src/campaign/entities/v2/campaign/landingPage/landingPageV3';
 import { LandingPageHeaderV2Fields } from '../../../src/campaign/entities/v2/campaign/landingPage/landingPageHeader';
 import { LandingPageFooterFeatureItemFields } from '../../../src/campaign/entities/v2/campaign/landingPage/landingPageFooter/landingPageFooterFeatureItem';
 import { CampaignListType } from '../../../src/campaign/entities/v2/campaignList';
@@ -1026,5 +1034,60 @@ export const GET_CAMPAIGN_AGGREGATIONS_OUTPUT: GetData<CampaignAggragationsType>
         },
       ],
     },
+  },
+};
+
+export const GET_DETAILS_CAMPAIGN_V2_LANDING_PAGE_OUTPUT: GetData<CampaignV2Type> = {
+  status: 200,
+  data: {
+    [CampaignV2Fields.COLUMN_REFERENCE]: 'c925ec6e-e029-4146-8400-2867c7761743',
+    [CampaignV2Fields.COLUMN_NAME]: 'Campaign landing page',
+    [CampaignV2Fields.COLUMN_CATEGORY]: 'CAMPAIGN_LANDING_PAGE',
+    [CampaignV2Fields.COLUMN_IS_ACTIVATED]: false,
+    [CampaignV2Fields.COLUMN_CREATED_AT]: '2026-11-03T16:00:00Z',
+    [CampaignV2Fields.COLUMN_UPDATED_AT]: '2026-11-03T18:00:00Z',
+    [CampaignV2Fields.COLUMN_LANDING_PAGE_COMPONENTS]: [
+      {
+        displayConfiguration: 1,
+        title: 'Landing page',
+        widgets: [
+          {
+            category: LandingPageWidgetCategory.HERO,
+            alignement: LandingPageComponentAlignement.CENTER,
+            background: {
+              type: CampaignBackgroundType.COLOR,
+              color1: '#FFFFFF',
+              color2: '#000000',
+            },
+            button1: {
+              buttonClass: BootstrapVariants.PRIMARY,
+              buttonIcon: 'fas fa-arrow-right',
+              buttonIconPosition: CampaignElementPosition.RIGHT,
+              linkUrl: 'https://www.arrow.com',
+              text: 'Discover',
+            },
+            button1Activated: true,
+            button2Activated: false,
+            description: '<p>Explanation</p>',
+            media: {
+              imageUuid: '539395aa-e418-4a3a-b151-45beffd04231',
+              type: CampaignMediaType.IMAGE,
+            },
+            subtitle: 'Introducing',
+            subtitleActivated: true,
+            textColor: '#FFFFFF',
+            title: 'Landing page title',
+          },
+          {
+            category: LandingPageWidgetCategory.FAQ,
+            alignement: LandingPageComponentAlignement.LEFT,
+            description: 'Everything you need to know',
+            questions: [{ answer: 'Yes', question: 'Is it free?' }],
+            subtitleActivated: false,
+            title: 'FAQ',
+          },
+        ],
+      },
+    ],
   },
 };

@@ -8,6 +8,7 @@ import {
   CampaignAssets,
   CampaignV2,
   CampaignAssetsUpload,
+  CampaignElementPosition,
 } from '../../src';
 import {
   GET_ACTIVE_CAMPAIGN_OUTPUT,
@@ -18,6 +19,7 @@ import {
   GET_ACTIVE_CAMPAIGNS_V2_OUTPUT,
   GET_ACTIVE_CAMPAIGNS_V2_MINIMAL_OUTPUT,
   GET_DETAILS_CAMPAIGN_V2_OUTPUT,
+  GET_DETAILS_CAMPAIGN_V2_LANDING_PAGE_OUTPUT,
   GET_DETAILS_CAMPAIGN_V2_WITHOUT_FEATURE_OUTPUT,
   GET_DETAILS_CAMPAIGN_V2_WITHOUT_FEATURE_ITEMS_OUTPUT,
   PAYLOAD_POST_CAMPAIGN_EMAIL,
@@ -26,6 +28,7 @@ import {
   GET_ACTIVE_CAMPAIGN_OUTPUT_WITHOUT_LANDING_PAGE,
   GET_CAMPAIGN_AGGREGATIONS_OUTPUT,
 } from './mocks/campaign.mocks';
+import { LandingPageWidgetCategory } from '../../src/campaign/entities/v2/campaign/landingPage/landingPageV3';
 import {
   GET_CAMPAIGN_ASSETS_FORM_OUTPUT,
   GET_CAMPAIGN_ASSETS_OUTPUT,
@@ -312,6 +315,33 @@ describe('CampaignClient', () => {
       expect(response.toJSON()).to.be.deep.equals(
         GET_DETAILS_CAMPAIGN_V2_WITHOUT_FEATURE_ITEMS_OUTPUT,
       );
+    });
+
+    it('keeps the campaign landing page', async () => {
+      nock(CAMPAIGN_MOCK_URL)
+        .get(GET_CAMPAIGN_DETAILS)
+        .reply(200, GET_DETAILS_CAMPAIGN_V2_LANDING_PAGE_OUTPUT);
+
+      const response: GetResult<CampaignV2> = await client.getCampaignDetailsV2(
+        'c925ec6e-e029-4146-8400-2867c7761743',
+      );
+
+      expect(response).to.be.instanceof(GetResult);
+      expect(response.toJSON()).to.be.deep.equals(
+        GET_DETAILS_CAMPAIGN_V2_LANDING_PAGE_OUTPUT,
+      );
+      const widgets = response.data.landingPageComponents?.[0]?.widgets ?? [];
+      expect(widgets.map((widget) => widget.category)).to.deep.equal([
+        LandingPageWidgetCategory.HERO,
+        LandingPageWidgetCategory.FAQ,
+      ]);
+
+      const hero = widgets[0];
+      expect(
+        hero.category === LandingPageWidgetCategory.HERO
+          ? hero.button1?.buttonIconPosition
+          : undefined,
+      ).to.equal(CampaignElementPosition.RIGHT);
     });
   });
 
